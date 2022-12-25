@@ -13,23 +13,17 @@ import Videos from './Videos';
 
 const ChannelDetail = () => {
   const { channelId } = useParams();
-  const [id, setId] = useState('');
   const [channel, setChannel] = useState<IChannelDetail>();
   const [videos, setVideos] = useState<IVideo[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (channelId) {
-      setId(channelId);
-    }
-  }, [channelId]);
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
         const { items }: { items: IChannelDetail[] } =
           await fetchFromAPI(
-            `channels?part=snippet,statistics&id=${id}`
+            `channels?part=snippet,statistics&id=${channelId}`
           );
         if (items && items[0]) {
           setChannel(items[0]);
@@ -37,7 +31,7 @@ const ChannelDetail = () => {
 
         const { items: data }: { items: IVideo[] } =
           await fetchFromAPI(
-            `search?part=snippet&channelId=${id}&order=date`
+            `search?part=snippet%2Cid&order=date&channelId=${channelId}&order=date`
           );
         setVideos(data);
         setLoading(false);
@@ -45,7 +39,8 @@ const ChannelDetail = () => {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [channelId]);
+
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
       {!loading && channel && videos.length > 0 ? (
